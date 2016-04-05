@@ -1,8 +1,11 @@
-//game with a loop
+
+/**
+ * game with a loop
+ */
 ECS.Game = function Game() {
     //fo reference to this object in other functions
     var self = this;
-
+    
     //entities that will be created
     var entities = {};
   
