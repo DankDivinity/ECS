@@ -3,12 +3,12 @@
  * game with a loop
  */
 ECS.Game = function Game() {
-    //fo reference to this object in other functions
+    //for reference to this object in other functions
     var self = this;
     
     //entities that will be created
     var entities = {};
-  
+    
     for (var i = 0; i < 1; i++) {
         var entity = new ECS.Entity();
         entity.addComponent(new ECS.Components.Appearance($("#ball")[0]));
@@ -16,12 +16,21 @@ ECS.Game = function Game() {
 
         entities[entity.id] = entity;
     }
-
+    
+    //add player
+    var player = new ECS.Entity();
+    player.addComponent(new ECS.Components.Appearance($("#ball")[0]));
+    player.addComponent(new ECS.Components.Position());
+    player.addComponent(new ECS.Components.PlayerControlled());
+    
+    entities[player.id] = player;
+    
     //set the ECS' entities to the game's entities
     ECS.entities = entities;
 
     //sytems to be put in array to iterate over
     var systems = [
+        ECS.systems.input,
         ECS.systems.render
     ];
 
@@ -69,10 +78,13 @@ $(document).ready(function () {
     //this only starts the game when the counter equals the amount of 'sprite' classes
     function startGame(){
         if (spritesloaded >= spriteAmt) {
-            ECS.context = $("#main-canvas")[0].getContext("2d");
+            ECS.canvas = $("#main-canvas")[0];
+            ECS.context = ECS.canvas.getContext("2d");
             ECS.context.imageSmoothingEnabled= false
             ECS.game = new ECS.Game();
         }
     }
+    
+    
 
 });

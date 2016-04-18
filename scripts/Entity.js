@@ -26,6 +26,7 @@ ECS.Entity.prototype._count = 0;
 /** add component and get entity returned for chaining */
 ECS.Entity.prototype.addComponent = function addComponent( component ){
     this.components[component.name] = component;
+    console.log(component.name);
     return this
 };
 

@@ -49,3 +49,15 @@ ECS.Components.Position = function ComponentPosition (params){
     return this;
 }
 ECS.Components.Position.prototype.name = 'position';
+
+/**
+ * if entity is player controlled
+ * provide array of functions to do for keys
+ */
+ECS.Components.PlayerControlled = function ComponentPlayerControlled(keyFunctions){
+    this.keyFunctions = keyFunctions || [];
+    
+    //keyFunctions is an array that is indexed by keyCodes
+    //ex: keyFunctions[23] is a function tied to a key with the keyCode 23
+};
+ECS.Components.PlayerControlled.prototype.name = 'playerControlled';
