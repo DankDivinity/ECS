@@ -71,7 +71,6 @@ ECS.systems.input = function systemInput(entities) {
         curEntity = entities[entityId];
         
         if (curEntity.components.playerControlled) {
-            
             if(keys[RIGHT]){
                 moveX(curEntity, 1);
             }else if(keys[LEFT]){

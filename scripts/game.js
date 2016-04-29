@@ -8,7 +8,9 @@ ECS.Game = function Game(width, height) {
 
     this.width = width | 200;
     this.height = height | 200;
-
+    
+    console.log('WIDTH',this.width);
+    console.log('HEIGHT',this.height);
     //setup main canvas and its variables
     var $canvas = $("<canvas width=" + this.width +
                            " height=" + this.height + 
@@ -18,7 +20,7 @@ ECS.Game = function Game(width, height) {
     ECS.canvas = $canvas[0];
     ECS.context = ECS.canvas.getContext("2d");
     ECS.context.imageSmoothingEnabled = false;
-    
+
     //entities that will be created
     var entities = {};
 
@@ -91,8 +93,7 @@ $(document).ready(function() {
     //this only starts the game when the counter equals the amount of 'sprite' classes
     function startGame() {
         if (spritesloaded >= spriteAmt) {
-
-
+            //there is game field now
             ECS.game = new ECS.Game();
         }
     }

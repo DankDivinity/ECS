@@ -7,7 +7,9 @@ ECS.systems.render = function systemRender(entities) {
     var scale = ECS.systems.render.prototype.scale;
     var lastScale = ECS.systems.render.prototype.lastScale;
     if(lastScale != scale){
-        $(ECS.canvas).width()
+        ECS.systems.render.prototype.lastScale = scale;      
+        $(ECS.canvas).width(ECS.game.width * scale);
+        console.log('SCALED by', scale, 'RESIZED to', ECS.game.width, ECS.Game);
     }
     clearScreen();
     //just a variable to be used
