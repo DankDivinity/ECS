@@ -15,19 +15,26 @@ ECS.systems.render = function systemRender(entities) {
         if (curEntity.components.appearance && curEntity.components.position) {
             var scale = ECS.systems.render.prototype.scale;
 
-            //draw the image if it has one
             if (curEntity.components.appearance.image) {
                 ECS.context.drawImage(curEntity.components.appearance.image,
-                    curEntity.components.position.x * scale,
-                    curEntity.components.position.y * scale,
-                    curEntity.components.appearance.width * scale,
-                    curEntity.components.appearance.height * scale);
+                    curEntity.components.position.x,
+                    curEntity.components.position.y,
+                    curEntity.components.appearance.width,
+                    curEntity.components.appearance.height);
+            } else {
+                ECS.context.beginPath();
+                ECS.context.arc(curEntity.components.position.x,
+                    curEntity.components.position.y,
+                    curEntity.components.appearance.params.radius,
+                    0,2*Math.PI );
+                ECS.context.stroke();
             }
+
         }
     }
 }
 ECS.systems.render.prototype.scale = 3;
 
-function clearScreen(){
+function clearScreen() {
     ECS.context.clearRect(0, 0, ECS.canvas.width, ECS.canvas.height);
 }

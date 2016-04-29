@@ -19,7 +19,7 @@ ECS.Game = function Game() {
     
     //add player
     var player = new ECS.Entity();
-    player.addComponent(new ECS.Components.Appearance($("#ball")[0]));
+    player.addComponent(new ECS.Components.Appearance(null, {radius: 40}));
     player.addComponent(new ECS.Components.Position());
     player.addComponent(new ECS.Components.PlayerControlled());
     

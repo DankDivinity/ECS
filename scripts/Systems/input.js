@@ -10,8 +10,8 @@ var UP = 38,
     
 var keys = [];
 
+//attach key input to html 
 function setupInput() {
-    console.log('sip')
     $('html').keydown(keydown);
     $('html').keyup(keyup);
 }
@@ -41,7 +41,7 @@ ECS.systems.input = function systemInput(entities) {
             
             if(keys[RIGHT]){
                 
-                moveX(curEntity, .1);
+                moveX(curEntity, 1);
             }else if(keys[LEFT]){
                 moveX(curEntity, -1);
             }

@@ -20,11 +20,11 @@ ECS.Components.Voice.prototype.name = 'voice';
  */
 ECS.Components.Appearance = function ComponentAppearance( image, params ){
     //params for whatever appearance related data
-    params = params || {};
+    this.params = params || {};
     
     this.image = null;
-    this.width = params.width || 0;
-    this.height = params.height || 0;
+    this.width = this.params.width || 0;
+    this.height = this.params.height || 0;
     
     //if paramter image is given
     if(image){
