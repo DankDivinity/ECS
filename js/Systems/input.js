@@ -7,19 +7,19 @@ var UP = 38,
     SHIFT = 16,
     ENTER = 13;
 
-//used for checking whether key is held or not 
-//boolean values..   
+//used for checking whether key is held or not
+//boolean values..
 var keys = [];
 
 //keys that are used by the game
 //also used to prevent document from scrolling
 var usedKeys = [UP, DOWN, RIGHT, LEFT, SPACE, SHIFT, ENTER];
 
-//attach key input to html 
+//attach key input to html
 function setupInput() {
     $(ECS.canvas).focus(function() {
         //add listeners for canvas
-        //prevent functioning 
+        //prevent functioning
         $(this).css('outline', 'none');
         console.log('focussed');
         $('html').keydown(keydown);
@@ -37,7 +37,6 @@ function setupInput() {
     $(ECS.canvas).focus();
 }
 function keydown(key) {
-    console.log(key.keyCode);
     keys[key.keyCode] = true;
 }
 function keyup(key) {
@@ -46,25 +45,23 @@ function keyup(key) {
 
 //preventing the document from scrolling
 function prevent(e) {
-    console.log('checking to prevent..');
     var key = e.which;
     if ($.inArray(key, usedKeys) > -1) {
-        console.log('preventing..');
         //this is what stops page frome scrolling
         e.preventDefault();
         return false;
     }
     return true;
 }
-var started = false;
+var inputStarted = false;
 /**
  * input
  * player inputs
  */
 ECS.systems.input = function systemInput(entities) {
-    if (!started) {
+    if (!inputStarted) {
         setupInput();
-        started = true;
+        inputStarted = true;
     }
 
     for (var entityId in entities) {
@@ -85,4 +82,3 @@ ECS.systems.input = function systemInput(entities) {
         }
     }
 }
-

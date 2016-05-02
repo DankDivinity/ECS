@@ -6,15 +6,14 @@
 ECS.systems.render = function systemRender(entities) {
     var scale = ECS.systems.render.prototype.scale;
     var lastScale = ECS.systems.render.prototype.lastScale;
-    if(lastScale != scale){
-        ECS.systems.render.prototype.lastScale = scale;      
+    if (lastScale != scale) {
+        ECS.systems.render.prototype.lastScale = scale;
         $(ECS.canvas).width(ECS.game.width * scale);
         console.log('SCALED by', scale, 'RESIZED to', ECS.game.width, ECS.Game);
     }
     clearScreen();
     //just a variable to be used
     var curEntity;
-
     //iterate through entities
     for (var entityId in entities) {
         curEntity = entities[entityId];
@@ -22,7 +21,7 @@ ECS.systems.render = function systemRender(entities) {
         //entity needs an appearance and position
         if (curEntity.components.appearance && curEntity.components.position) {
             if (curEntity.components.appearance.image) {
-                ECS.context.drawImage(curEntity.components.appearance.image,
+                drawImage(curEntity.components.appearance.image,
                     curEntity.components.position.x,
                     curEntity.components.position.y,
                     curEntity.components.appearance.width,
@@ -38,7 +37,7 @@ ECS.systems.render = function systemRender(entities) {
 
         }
     }
-    
+
 }
 ECS.systems.render.prototype.scale = 3;
 ECS.systems.render.prototype.lastScale = 0;
@@ -46,4 +45,9 @@ ECS.systems.render.prototype.lastScale = 0;
 
 function clearScreen() {
     ECS.context.clearRect(0, 0, ECS.canvas.width, ECS.canvas.height);
+}
+
+//to center drawing
+function drawImage(image, x, y, w, h) {
+    ECS.context.drawImage(image, x - w / 2, y - h / 2, w, h);
 }

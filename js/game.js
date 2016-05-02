@@ -14,6 +14,15 @@ ECS.Game = function Game(width, height) {
     var entities = {};
     var systems = [];
 
+    //spawner
+    var spawner = setInterval(spawn,2000);
+    function spawn(){
+      if(!self._running)
+        return;
+      var entity = ECS.assemblers.cat(new ECS.Entity(),
+                                      self.width, self.height);
+      entities[entity.id] = entity;
+    }
     //this is how the gameLoop starts...
     //this function is part of the browser and calls the given function
     //in the parameter
@@ -21,8 +30,9 @@ ECS.Game = function Game(width, height) {
         this._running = true;
         requestAnimationFrame(gameLoop);
     }
-    this.endGame = function endGame() {
+    this.pause = function endGame() {
         self._running = false;
+        clearInterval(spawner);
     };
 
     function init() {
@@ -37,25 +47,17 @@ ECS.Game = function Game(width, height) {
         ECS.canvas = $canvas[0];
         ECS.context = ECS.canvas.getContext("2d");
         ECS.context.imageSmoothingEnabled = false;
-        
-        for (var i = 0; i < 1; i++) {
-            var entity = new ECS.Entity();
-            entity.addComponent(new ECS.Components.Appearance($("#ball")[0]));
-            entity.addComponent(new ECS.Components.Position());
 
-            entities[entity.id] = entity;
-        }
         for (var i = 0; i < 1; i++) {
-            var entity = ECS.assemblers.cat(new ECS.Entity(),
-                                            self.width, self.height);
-            entities[entity.id] = entity;
+            spawn();
         }
 
         //add player
         var player = new ECS.Entity();
-        player.addComponent(new ECS.Components.Appearance(null, { radius: 40 }));
+        player.addComponent(new ECS.Components.Appearance($("#banana")[0]));
         player.addComponent(new ECS.Components.Position({ x: 0, y: 70 }));
         player.addComponent(new ECS.Components.PlayerControlled());
+        player.addComponent(new ECS.Components.Collidable(true));
 
         entities[player.id] = player;
 
@@ -68,10 +70,11 @@ ECS.Game = function Game(width, height) {
         systems = [
             ECS.systems.input,
             ECS.systems.catAI,
-            ECS.systems.render
+            ECS.systems.collision,
+            ECS.systems.render,
         ];
     };
-    
+
     //the game loop
     function gameLoop() {
         //go through systems
@@ -84,9 +87,8 @@ ECS.Game = function Game(width, height) {
             requestAnimationFrame(gameLoop);
         }
     }
-    
+
     init();
     //for returning purposes
     return this;
 }
-

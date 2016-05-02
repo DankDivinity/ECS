@@ -1,0 +1,23 @@
+{
+  "name": "ecs",
+  "version": "1.0.0",
+  "description": "project for my CSC 205 class",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DankDivinity/ECS.git"
+  },
+  "author": "Kori Fogle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DankDivinity/ECS/issues"
+  },
+  "homepage": "https://github.com/DankDivinity/ECS#readme",
+  "devDependencies": {
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0"
+  }
+}
