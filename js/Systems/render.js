@@ -20,19 +20,27 @@ ECS.systems.render = function systemRender(entities) {
 
         //entity needs an appearance and position
         if (curEntity.components.appearance && curEntity.components.position) {
-            if (curEntity.components.appearance.image) {
+            if (curEntity.components.appearance.image != null) {
                 drawImage(curEntity.components.appearance.image,
                     curEntity.components.position.x,
                     curEntity.components.position.y,
                     curEntity.components.appearance.width,
                     curEntity.components.appearance.height);
-            } else {
-                ECS.context.beginPath();
-                ECS.context.arc(curEntity.components.position.x,
-                    curEntity.components.position.y,
-                    curEntity.components.appearance.params.radius,
-                    0, 2 * Math.PI);
-                ECS.context.stroke();
+            } else if (curEntity.components.text) {
+                ECS.context.font = "30px Arial";
+                if (curEntity.components.appearance.params.color) {
+                    ECS.context.fillStyle = curEntity.components.appearance.params.color;
+                } else {
+                    ECS.context.fillStyle = 'black';
+                }
+
+                var staticText = ''
+                    /* curEntity.components.text.params.staticText;
+                                    if(!staticText)
+                                      staticText = '';*/
+                ECS.context.fillText(staticText + curEntity.components.text,
+                    curEntity.components.position.x,
+                    curEntity.components.position.y)
             }
 
         }

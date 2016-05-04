@@ -94,3 +94,27 @@ ECS.Components.Collidable = function ComponentCollidable(watch) {
 
 }
 ECS.Components.Collidable.prototype.name = 'collidable';
+
+/**
+ * Component for text
+ */
+ECS.Components.Text = function ComponentText(text, params){
+  this.text = text;
+  this.params = params;
+  if(!this.params)
+    this.params = {};
+  console.log(this.params);
+}
+ECS.Components.Text.prototype.name = 'text';
+
+/**
+ * Component for health
+ */
+ECS.Components.Health = function ComponentHealth(initialHealth){
+  this.amount = initialHealth;
+  if(!this.amount || this.amount == NaN)
+    this.amount = 0;
+
+  this.justHit = false;
+}
+ECS.Components.Health.prototype.name = 'health';

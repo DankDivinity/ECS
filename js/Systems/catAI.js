@@ -46,11 +46,13 @@ ECS.systems.catAI = function systemCatAI(entities) {
       move(curEntity, curEntity.components.cat.spx,
            curEntity.components.cat.spy);
 
+      //if the cat reaches outside the screen
       if(curEntity.components.position.x >= ECS.game.width ||
          curEntity.components.position.x < 0 ||
          curEntity.components.position.y >= ECS.game.height ||
          curEntity.components.position.y < 0){
            console.log('deleted');
+           ECS.game.addPoints('cat-missed');
            ECS.removeEntity(curEntity);
          }
 

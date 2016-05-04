@@ -10,12 +10,28 @@ ECS.Game = function Game(width, height) {
     this.height = height | 200;
     this._running = false;
 
+
     //entities that will be created
     var entities = {};
     var systems = [];
 
+    this.healthEntityId;
+    this.score = 0;
+    this.scoreEntityId;
+    this.addPoints = function addPoints(type){
+      var amt = 50;
+      if(type == 'cat-missed')
+        amt = 100;
+
+      self.score += amt;
+      entities[self.scoreEntityId].components.text = self.score;
+    }
+    this.updateHealth = function updateHealth(){
+      entities[this.healthEntityId].components.text = ECS.player.components.health.amount;
+    }
     //spawner
     var spawner = setInterval(spawn,2000);
+
     function spawn(){
       if(!self._running)
         return;
@@ -30,19 +46,28 @@ ECS.Game = function Game(width, height) {
         this._running = true;
         requestAnimationFrame(gameLoop);
     }
-    this.pause = function endGame() {
+    this.pause = function pauseGame() {
         self._running = false;
         clearInterval(spawner);
     };
+    this.end = function endGame(){
+      this.pause();
+      $('#game-over-screen').show();
+    }
 
     function init() {
+        var scale = ECS.systems.render.prototype.scale;
         console.log('WIDTH', self.width);
         console.log('HEIGHT', self.height);
         //setup main canvas and its variables
         var $canvas = $("<canvas width=" + self.width +
             " height=" + self.height +
             " tabindex='1'></canvas>");
-        $('body').append($canvas);
+        $('body').prepend($canvas);
+
+        $('#game-over-screen').width(self.width * scale ).height(self.height * scale/3)
+                              .css({top: self.height * scale/3 });
+        $('#game-over-screen').hide();
         $canvas.focus();
         ECS.canvas = $canvas[0];
         ECS.context = ECS.canvas.getContext("2d");
@@ -53,16 +78,27 @@ ECS.Game = function Game(width, height) {
         }
 
         //add player
-        var player = new ECS.Entity();
-        player.addComponent(new ECS.Components.Appearance($("#banana")[0]));
-        player.addComponent(new ECS.Components.Position({ x: 0, y: 70 }));
-        player.addComponent(new ECS.Components.PlayerControlled());
-        player.addComponent(new ECS.Components.Collidable(true));
-
+        var player = ECS.assemblers.player(new ECS.Entity(), self.width, self.height);
         entities[player.id] = player;
 
         ECS.player = player;
 
+        var scoreEntity = new ECS.Entity();
+        scoreEntity.addComponent(new ECS.Components.Appearance());
+        scoreEntity.addComponent(new ECS.Components.Text(self.score));
+        scoreEntity.addComponent(new ECS.Components.Position({ x: 0, y: 30 }));
+
+        entities[scoreEntity.id] = scoreEntity;
+        //for reference to the score entity
+        self.scoreEntityId = scoreEntity.id;
+
+        var healthEntity = new ECS.Entity();
+        healthEntity.addComponent(new ECS.Components.Appearance());
+        healthEntity.addComponent(new ECS.Components.Text(player.components.health.amount,{staticText: 'HEALTH:'}));
+        healthEntity.addComponent(new ECS.Components.Position({ x: 0, y: 80 }));
+
+        entities[healthEntity.id] = healthEntity;
+        self.healthEntityId = healthEntity.id;
         //set the ECS' entities to the game's entities
         ECS.entities = entities;
 

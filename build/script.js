@@ -86,6 +86,21 @@ ECS.assemblers.cat = function catAssembler(entity, spawnWidth, spawnHeight){
 }
 
 /**
+ * Assembler for player
+ */
+
+ECS.assemblers.player = function playerAssembler(entity, spawnWidth, spawnHeight){
+  var player = entity;
+  player.addComponent(new ECS.Components.Appearance($("#banana")[0]));
+  player.addComponent(new ECS.Components.Position({ x: spawnWidth/2, y: spawnHeight/2 }));
+  player.addComponent(new ECS.Components.PlayerControlled());
+  player.addComponent(new ECS.Components.Collidable(true));
+  player.addComponent(new ECS.Components.Health(100));
+
+  return player;
+}
+
+/**
  * Components are just data. Should not do anything on their own.
  * That is for Systems to handle
  */
@@ -183,6 +198,30 @@ ECS.Components.Collidable = function ComponentCollidable(watch) {
 ECS.Components.Collidable.prototype.name = 'collidable';
 
 /**
+ * Component for text
+ */
+ECS.Components.Text = function ComponentText(text, params){
+  this.text = text;
+  this.params = params;
+  if(!this.params)
+    this.params = {};
+  console.log(this.params);
+}
+ECS.Components.Text.prototype.name = 'text';
+
+/**
+ * Component for health
+ */
+ECS.Components.Health = function ComponentHealth(initialHealth){
+  this.amount = initialHealth;
+  if(!this.amount || this.amount == NaN)
+    this.amount = 0;
+
+  this.justHit = false;
+}
+ECS.Components.Health.prototype.name = 'health';
+
+/**
  * The entity class
  */
 ECS.Entity = function(){
@@ -239,12 +278,28 @@ ECS.Game = function Game(width, height) {
     this.height = height | 200;
     this._running = false;
 
+
     //entities that will be created
     var entities = {};
     var systems = [];
 
+    this.healthEntityId;
+    this.score = 0;
+    this.scoreEntityId;
+    this.addPoints = function addPoints(type){
+      var amt = 50;
+      if(type == 'cat-missed')
+        amt = 100;
+
+      self.score += amt;
+      entities[self.scoreEntityId].components.text = self.score;
+    }
+    this.updateHealth = function updateHealth(){
+      entities[this.healthEntityId].components.text = ECS.player.components.health.amount;
+    }
     //spawner
     var spawner = setInterval(spawn,2000);
+
     function spawn(){
       if(!self._running)
         return;
@@ -259,19 +314,28 @@ ECS.Game = function Game(width, height) {
         this._running = true;
         requestAnimationFrame(gameLoop);
     }
-    this.pause = function endGame() {
+    this.pause = function pauseGame() {
         self._running = false;
         clearInterval(spawner);
     };
+    this.end = function endGame(){
+      this.pause();
+      $('#game-over-screen').show();
+    }
 
     function init() {
+        var scale = ECS.systems.render.prototype.scale;
         console.log('WIDTH', self.width);
         console.log('HEIGHT', self.height);
         //setup main canvas and its variables
         var $canvas = $("<canvas width=" + self.width +
             " height=" + self.height +
             " tabindex='1'></canvas>");
-        $('body').append($canvas);
+        $('body').prepend($canvas);
+
+        $('#game-over-screen').width(self.width * scale ).height(self.height * scale/3)
+                              .css({top: self.height * scale/3 });
+        $('#game-over-screen').hide();
         $canvas.focus();
         ECS.canvas = $canvas[0];
         ECS.context = ECS.canvas.getContext("2d");
@@ -282,16 +346,27 @@ ECS.Game = function Game(width, height) {
         }
 
         //add player
-        var player = new ECS.Entity();
-        player.addComponent(new ECS.Components.Appearance($("#banana")[0]));
-        player.addComponent(new ECS.Components.Position({ x: 0, y: 70 }));
-        player.addComponent(new ECS.Components.PlayerControlled());
-        player.addComponent(new ECS.Components.Collidable(true));
-
+        var player = ECS.assemblers.player(new ECS.Entity(), self.width, self.height);
         entities[player.id] = player;
 
         ECS.player = player;
 
+        var scoreEntity = new ECS.Entity();
+        scoreEntity.addComponent(new ECS.Components.Appearance());
+        scoreEntity.addComponent(new ECS.Components.Text(self.score));
+        scoreEntity.addComponent(new ECS.Components.Position({ x: 0, y: 30 }));
+
+        entities[scoreEntity.id] = scoreEntity;
+        //for reference to the score entity
+        self.scoreEntityId = scoreEntity.id;
+
+        var healthEntity = new ECS.Entity();
+        healthEntity.addComponent(new ECS.Components.Appearance());
+        healthEntity.addComponent(new ECS.Components.Text(player.components.health.amount,{staticText: 'HEALTH:'}));
+        healthEntity.addComponent(new ECS.Components.Position({ x: 0, y: 80 }));
+
+        entities[healthEntity.id] = healthEntity;
+        self.healthEntityId = healthEntity.id;
         //set the ECS' entities to the game's entities
         ECS.entities = entities;
 
@@ -370,11 +445,13 @@ ECS.systems.catAI = function systemCatAI(entities) {
       move(curEntity, curEntity.components.cat.spx,
            curEntity.components.cat.spy);
 
+      //if the cat reaches outside the screen
       if(curEntity.components.position.x >= ECS.game.width ||
          curEntity.components.position.x < 0 ||
          curEntity.components.position.y >= ECS.game.height ||
          curEntity.components.position.y < 0){
            console.log('deleted');
+           ECS.game.addPoints('cat-missed');
            ECS.removeEntity(curEntity);
          }
 
@@ -422,13 +499,13 @@ ECS.systems.collision = function systemCollision(entities) {
                 var checkX = false,
                     checkY = false;
                 for (var otherId in entities) {
-                    console.log(entities);
+                    //console.log(entities);
                     var otherEntity = entities[otherId];
 
                     if (entityId === otherId) {
                         continue;
                     }
-                    console.log('different:', curEntity.id, '\t' + otherEntity.id);
+                    //console.log('different:', curEntity.id, '\t' + otherEntity.id);
                     var ox = otherEntity.components.position.x;
                     var oy = otherEntity.components.position.y;
                     var ow = 0;
@@ -449,9 +526,15 @@ ECS.systems.collision = function systemCollision(entities) {
                         (y + h / 2 - 1 < oy + oh / 2 && y + h / 2 - 1 >= oy - oh / 2)) {
                         checkY = true;
                     }
-                    console.log('oX:', ox, 'oY:', oy, 'oW:', ow, 'oH:', oh);
-                    if (checkX && checkY)
-                        console.log('collided');
+                    //console.log('oX:', ox, 'oY:', oy, 'oW:', ow, 'oH:', oh);
+
+
+                    if (checkX && checkY){
+                        //console.log('collided');
+                        if(curEntity.components.playerControlled && !ECS.player.components.health.justHit){
+                          hitPlayer();
+                        }
+                    }
 
                 }
                 var collideText = '<b>X:</b>' + x + ', </b>Y:</b>' + y + '<br></b>W:</b>' + w + ', </b>H:</b>' + h + '<br><b>checkX</b>' + checkX + ', <b>checkY</b>' + checkY;
@@ -460,7 +543,23 @@ ECS.systems.collision = function systemCollision(entities) {
             }
         }
     }
-};
+}
+
+function hitPlayer(){
+  var health = ECS.player.components.health.amount;
+  console.log(ECS.player.components)
+  health -= 10;
+  ECS.player.components.health.amount = health;
+  ECS.player.components.health.justHit = true;
+  var invinciblePhase = setTimeout(function(){
+    ECS.player.components.health.justHit = false;
+  },300);
+  ECS.game.updateHealth();
+  console.log('HEALTH:',health);
+  if(health <= 0){
+    ECS.game.end();
+  }
+}
 
 //functions and variables
 var UP = 38,
@@ -569,19 +668,26 @@ ECS.systems.render = function systemRender(entities) {
 
         //entity needs an appearance and position
         if (curEntity.components.appearance && curEntity.components.position) {
-            if (curEntity.components.appearance.image) {
+            if (curEntity.components.appearance.image != null) {
                 drawImage(curEntity.components.appearance.image,
                     curEntity.components.position.x,
                     curEntity.components.position.y,
                     curEntity.components.appearance.width,
                     curEntity.components.appearance.height);
-            } else {
-                ECS.context.beginPath();
-                ECS.context.arc(curEntity.components.position.x,
-                    curEntity.components.position.y,
-                    curEntity.components.appearance.params.radius,
-                    0, 2 * Math.PI);
-                ECS.context.stroke();
+            } else if (curEntity.components.text) {
+                ECS.context.font = "30px Arial";
+                if(curEntity.components.appearance.params.color)
+                  ECS.context.fillStyle = curEntity.components.appearance.params.color;
+                else {
+                  ECS.context.fillStyle = 'black';
+                }
+
+                var staticText = ''/* curEntity.components.text.params.staticText;
+                if(!staticText)
+                  staticText = '';*/
+                ECS.context.fillText(staticText + curEntity.components.text,
+                    curEntity.components.position.x,
+                    curEntity.components.position.y)
             }
 
         }
