@@ -52,7 +52,11 @@ ECS.systems.render.prototype.lastScale = 0;
 
 
 function clearScreen() {
+    ECS.context.fillStlye = 'green';
+
     ECS.context.clearRect(0, 0, ECS.canvas.width, ECS.canvas.height);
+    ECS.context.fillRect(0, 0, ECS.canvas.width, ECS.canvas.height);
+    console.log(ECS.canvas.width, ECS.canvas.height, ECS.context.fillStlye);
 }
 
 //to center drawing

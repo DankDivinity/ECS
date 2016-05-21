@@ -676,15 +676,16 @@ ECS.systems.render = function systemRender(entities) {
                     curEntity.components.appearance.height);
             } else if (curEntity.components.text) {
                 ECS.context.font = "30px Arial";
-                if(curEntity.components.appearance.params.color)
-                  ECS.context.fillStyle = curEntity.components.appearance.params.color;
-                else {
-                  ECS.context.fillStyle = 'black';
+                if (curEntity.components.appearance.params.color) {
+                    ECS.context.fillStyle = curEntity.components.appearance.params.color;
+                } else {
+                    ECS.context.fillStyle = 'black';
                 }
 
-                var staticText = ''/* curEntity.components.text.params.staticText;
-                if(!staticText)
-                  staticText = '';*/
+                var staticText = ''
+                    /* curEntity.components.text.params.staticText;
+                                    if(!staticText)
+                                      staticText = '';*/
                 ECS.context.fillText(staticText + curEntity.components.text,
                     curEntity.components.position.x,
                     curEntity.components.position.y)
@@ -699,7 +700,11 @@ ECS.systems.render.prototype.lastScale = 0;
 
 
 function clearScreen() {
+    ECS.context.fillStlye = 'green';
+
     ECS.context.clearRect(0, 0, ECS.canvas.width, ECS.canvas.height);
+    ECS.context.fillRect(0, 0, ECS.canvas.width, ECS.canvas.height);
+    console.log(ECS.canvas.width, ECS.canvas.height, ECS.context.fillStlye);
 }
 
 //to center drawing
