@@ -319,7 +319,7 @@ ECS.Game = function Game(width, height) {
         clearInterval(spawner);
     };
     this.end = function endGame(){
-      this.pause();
+      self.pause();
       $('#game-over-screen').show();
     }
 
