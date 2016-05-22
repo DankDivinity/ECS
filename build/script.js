@@ -106,6 +106,7 @@ ECS.assemblers.player = function playerAssembler(entity, spawnWidth, spawnHeight
  */
 
 
+
 /**
  * Voice
  * something to output
@@ -169,13 +170,14 @@ ECS.Components.PlayerControlled.prototype.name = 'playerControlled';
  * for each cat, and spx and spy that is for direction
  */
 ECS.Components.Cat = function ComponentCat() {
-    this.speed = 3 + ECS.Components.Cat.prototype.amount * 0.5;
+    this.speed = 0.5 //+ ECS.Components.Cat.prototype.amount * 0.5;
     //speedx, speedy
     //set zero..will use this as an example for
     //assembler
     this.spx = 0;
     this.spy = 0;
     this.started = true;
+    this.followTime = 60;
     ECS.Components.Cat.prototype.amount++;
 }
 ECS.Components.Cat.prototype.name = 'cat';
@@ -214,7 +216,7 @@ ECS.Components.Text.prototype.name = 'text';
  */
 ECS.Components.Health = function ComponentHealth(initialHealth){
   this.amount = initialHealth;
-  if(!this.amount || this.amount == NaN)
+  if(!this.amount || isNaN(this.amount))
     this.amount = 0;
 
   this.justHit = false;
@@ -292,10 +294,10 @@ ECS.Game = function Game(width, height) {
         amt = 100;
 
       self.score += amt;
-      entities[self.scoreEntityId].components.text = self.score;
+      entities[self.scoreEntityId].components.text.value = self.score;
     }
     this.updateHealth = function updateHealth(){
-      entities[this.healthEntityId].components.text = ECS.player.components.health.amount;
+      entities[this.healthEntityId].components.text.value = ECS.player.components.health.amount;
     }
     //spawner
     var spawner = setInterval(spawn,2000);
@@ -321,7 +323,7 @@ ECS.Game = function Game(width, height) {
     this.end = function endGame(){
       self.pause();
       $('#game-over-screen').show();
-    }
+    };
 
     function init() {
         var scale = ECS.systems.render.prototype.scale;
@@ -353,7 +355,7 @@ ECS.Game = function Game(width, height) {
 
         var scoreEntity = new ECS.Entity();
         scoreEntity.addComponent(new ECS.Components.Appearance());
-        scoreEntity.addComponent(new ECS.Components.Text(self.score));
+        scoreEntity.addComponent(new ECS.Components.Text(self.score, {staticText: 'SCORE:', color: 'blue'}));
         scoreEntity.addComponent(new ECS.Components.Position({ x: 0, y: 30 }));
 
         entities[scoreEntity.id] = scoreEntity;
@@ -362,7 +364,7 @@ ECS.Game = function Game(width, height) {
 
         var healthEntity = new ECS.Entity();
         healthEntity.addComponent(new ECS.Components.Appearance());
-        healthEntity.addComponent(new ECS.Components.Text(player.components.health.amount,{staticText: 'HEALTH:'}));
+        healthEntity.addComponent(new ECS.Components.Text(player.components.health.amount, {staticText: 'HEALTH:', color: 'green'}));
         healthEntity.addComponent(new ECS.Components.Position({ x: 0, y: 80 }));
 
         entities[healthEntity.id] = healthEntity;
@@ -407,8 +409,11 @@ ECS.systems.catAI = function systemCatAI(entities) {
 
     if (curEntity.components.cat) {
       //set initial direction
-      if (curEntity.components.cat.started) {
+      if (curEntity.components.cat.followTime > 0) {
         //cat variables
+        
+        curEntity.components.cat.followTime--;
+        
         var cx = curEntity.components.position.x;
         var cy = curEntity.components.position.y;
         var sp = curEntity.components.cat.speed;
@@ -682,11 +687,10 @@ ECS.systems.render = function systemRender(entities) {
                     ECS.context.fillStyle = 'black';
                 }
 
-                var staticText = ''
-                    /* curEntity.components.text.params.staticText;
-                                    if(!staticText)
-                                      staticText = '';*/
-                ECS.context.fillText(staticText + curEntity.components.text,
+                var staticText = curEntity.components.text.params.staticText;
+                if(!staticText)
+                    staticText = '';
+                ECS.context.fillText(staticText + curEntity.components.text.value,
                     curEntity.components.position.x,
                     curEntity.components.position.y)
             }
@@ -700,11 +704,9 @@ ECS.systems.render.prototype.lastScale = 0;
 
 
 function clearScreen() {
-    ECS.context.fillStlye = 'green';
+    ECS.context.fillStyle = '#A1A1A1';
 
-    ECS.context.clearRect(0, 0, ECS.canvas.width, ECS.canvas.height);
     ECS.context.fillRect(0, 0, ECS.canvas.width, ECS.canvas.height);
-    console.log(ECS.canvas.width, ECS.canvas.height, ECS.context.fillStlye);
 }
 
 //to center drawing

@@ -4,6 +4,7 @@
  */
 
 
+
 /**
  * Voice
  * something to output
@@ -67,13 +68,14 @@ ECS.Components.PlayerControlled.prototype.name = 'playerControlled';
  * for each cat, and spx and spy that is for direction
  */
 ECS.Components.Cat = function ComponentCat() {
-    this.speed = 3 + ECS.Components.Cat.prototype.amount * 0.5;
+    this.speed = 0.5 //+ ECS.Components.Cat.prototype.amount * 0.5;
     //speedx, speedy
     //set zero..will use this as an example for
     //assembler
     this.spx = 0;
     this.spy = 0;
     this.started = true;
+    this.followTime = 60;
     ECS.Components.Cat.prototype.amount++;
 }
 ECS.Components.Cat.prototype.name = 'cat';
@@ -112,7 +114,7 @@ ECS.Components.Text.prototype.name = 'text';
  */
 ECS.Components.Health = function ComponentHealth(initialHealth){
   this.amount = initialHealth;
-  if(!this.amount || this.amount == NaN)
+  if(!this.amount || isNaN(this.amount))
     this.amount = 0;
 
   this.justHit = false;
