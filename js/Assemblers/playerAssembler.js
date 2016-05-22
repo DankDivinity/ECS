@@ -9,6 +9,7 @@ ECS.assemblers.player = function playerAssembler(entity, spawnWidth, spawnHeight
   player.addComponent(new ECS.Components.PlayerControlled());
   player.addComponent(new ECS.Components.Collidable(true));
   player.addComponent(new ECS.Components.Health(100));
-
+  
+  player.components.collidable.collidesInto.push(ECS.Components.Cat.prototype.name);
   return player;
 }

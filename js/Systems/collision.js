@@ -32,10 +32,16 @@ ECS.systems.collision = function systemCollision(entities) {
                 for (var otherId in entities) {
                     //console.log(entities);
                     var otherEntity = entities[otherId];
-
+                    
+                    //is this the same entity?
                     if (entityId === otherId) {
                         continue;
                     }
+                    //if current entity can collide into other entity
+                    if(findOne(otherEntity.components, curEntity.components.collidable.collidesInto)){
+                        continue;
+                    }
+                    
                     //console.log('different:', curEntity.id, '\t' + otherEntity.id);
                     var ox = otherEntity.components.position.x;
                     var oy = otherEntity.components.position.y;
@@ -91,3 +97,9 @@ function hitPlayer(){
     ECS.game.end();
   }
 }
+
+function findOne(haystack, arr) {
+    return arr.some(function (v) {
+        return haystack.indexOf(v) >= 0;
+    });
+};

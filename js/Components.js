@@ -93,7 +93,8 @@ ECS.Components.Collidable = function ComponentCollidable(watch) {
     else {
         this.watch = true
     }
-
+    
+    this.collidesInto = [];
 }
 ECS.Components.Collidable.prototype.name = 'collidable';
 

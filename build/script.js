@@ -96,7 +96,8 @@ ECS.assemblers.player = function playerAssembler(entity, spawnWidth, spawnHeight
   player.addComponent(new ECS.Components.PlayerControlled());
   player.addComponent(new ECS.Components.Collidable(true));
   player.addComponent(new ECS.Components.Health(100));
-
+  
+  player.components.collidable.collidesInto.push(ECS.Components.Cat.prototype.name);
   return player;
 }
 
@@ -195,7 +196,8 @@ ECS.Components.Collidable = function ComponentCollidable(watch) {
     else {
         this.watch = true
     }
-
+    
+    this.collidesInto = [];
 }
 ECS.Components.Collidable.prototype.name = 'collidable';
 
@@ -506,10 +508,16 @@ ECS.systems.collision = function systemCollision(entities) {
                 for (var otherId in entities) {
                     //console.log(entities);
                     var otherEntity = entities[otherId];
-
+                    
+                    //is this the same entity?
                     if (entityId === otherId) {
                         continue;
                     }
+                    //if current entity can collide into other entity
+                    if(findOne(otherEntity.components, curEntity.components.collidable.collidesInto)){
+                        continue;
+                    }
+                    
                     //console.log('different:', curEntity.id, '\t' + otherEntity.id);
                     var ox = otherEntity.components.position.x;
                     var oy = otherEntity.components.position.y;
@@ -565,6 +573,12 @@ function hitPlayer(){
     ECS.game.end();
   }
 }
+
+function findOne(haystack, arr) {
+    return arr.some(function (v) {
+        return haystack.indexOf(v) >= 0;
+    });
+};
 
 //functions and variables
 var UP = 38,
