@@ -24,10 +24,10 @@ ECS.Game = function Game(width, height) {
         amt = 100;
 
       self.score += amt;
-      entities[self.scoreEntityId].components.text = self.score;
+      entities[self.scoreEntityId].components.text.value = self.score;
     }
     this.updateHealth = function updateHealth(){
-      entities[this.healthEntityId].components.text = ECS.player.components.health.amount;
+      entities[this.healthEntityId].components.text.value = ECS.player.components.health.amount;
     }
     //spawner
     var spawner = setInterval(spawn,2000);
@@ -70,7 +70,7 @@ ECS.Game = function Game(width, height) {
         $('#game-over-screen').hide();
         $canvas.focus();
         ECS.canvas = $canvas[0];
-        ECS.context = ECS.canvas.getContext("2d");
+        ECS.context = ECS.canvas.getContext("2d", {alpha: false});
         ECS.context.imageSmoothingEnabled = false;
 
         for (var i = 0; i < 1; i++) {

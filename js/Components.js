@@ -49,6 +49,11 @@ ECS.Components.Position = function ComponentPosition(params) {
 }
 ECS.Components.Position.prototype.name = 'position';
 
+
+ECS.Components.Velocity = function ComponentVelocity(){
+  this.vx = 0;
+  this.vy = 0;
+}
 /**
  * if entity is player controlled
  * provide array of functions to do for keys
@@ -98,8 +103,8 @@ ECS.Components.Collidable.prototype.name = 'collidable';
 /**
  * Component for text
  */
-ECS.Components.Text = function ComponentText(text, params){
-  this.text = text;
+ECS.Components.Text = function ComponentText(value, params){
+  this.value = value;
   this.params = params;
   if(!this.params)
     this.params = {};

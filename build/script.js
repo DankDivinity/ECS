@@ -200,8 +200,8 @@ ECS.Components.Collidable.prototype.name = 'collidable';
 /**
  * Component for text
  */
-ECS.Components.Text = function ComponentText(text, params){
-  this.text = text;
+ECS.Components.Text = function ComponentText(value, params){
+  this.value = value;
   this.params = params;
   if(!this.params)
     this.params = {};
@@ -292,10 +292,10 @@ ECS.Game = function Game(width, height) {
         amt = 100;
 
       self.score += amt;
-      entities[self.scoreEntityId].components.text = self.score;
+      entities[self.scoreEntityId].components.text.value = self.score;
     }
     this.updateHealth = function updateHealth(){
-      entities[this.healthEntityId].components.text = ECS.player.components.health.amount;
+      entities[this.healthEntityId].components.text.value = ECS.player.components.health.amount;
     }
     //spawner
     var spawner = setInterval(spawn,2000);
@@ -338,7 +338,7 @@ ECS.Game = function Game(width, height) {
         $('#game-over-screen').hide();
         $canvas.focus();
         ECS.canvas = $canvas[0];
-        ECS.context = ECS.canvas.getContext("2d");
+        ECS.context = ECS.canvas.getContext("2d", {alpha: false});
         ECS.context.imageSmoothingEnabled = false;
 
         for (var i = 0; i < 1; i++) {
@@ -686,7 +686,7 @@ ECS.systems.render = function systemRender(entities) {
                     /* curEntity.components.text.params.staticText;
                                     if(!staticText)
                                       staticText = '';*/
-                ECS.context.fillText(staticText + curEntity.components.text,
+                ECS.context.fillText(staticText + curEntity.components.text.value,
                     curEntity.components.position.x,
                     curEntity.components.position.y)
             }
@@ -700,11 +700,8 @@ ECS.systems.render.prototype.lastScale = 0;
 
 
 function clearScreen() {
-    ECS.context.fillStlye = 'green';
-
-    ECS.context.clearRect(0, 0, ECS.canvas.width, ECS.canvas.height);
+    ECS.context.fillStyle = '#222222';
     ECS.context.fillRect(0, 0, ECS.canvas.width, ECS.canvas.height);
-    console.log(ECS.canvas.width, ECS.canvas.height, ECS.context.fillStlye);
 }
 
 //to center drawing

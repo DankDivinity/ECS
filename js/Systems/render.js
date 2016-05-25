@@ -38,7 +38,7 @@ ECS.systems.render = function systemRender(entities) {
                     /* curEntity.components.text.params.staticText;
                                     if(!staticText)
                                       staticText = '';*/
-                ECS.context.fillText(staticText + curEntity.components.text,
+                ECS.context.fillText(staticText + curEntity.components.text.value,
                     curEntity.components.position.x,
                     curEntity.components.position.y)
             }
@@ -52,11 +52,8 @@ ECS.systems.render.prototype.lastScale = 0;
 
 
 function clearScreen() {
-    ECS.context.fillStlye = 'green';
-
-    ECS.context.clearRect(0, 0, ECS.canvas.width, ECS.canvas.height);
+    ECS.context.fillStyle = '#222222';
     ECS.context.fillRect(0, 0, ECS.canvas.width, ECS.canvas.height);
-    console.log(ECS.canvas.width, ECS.canvas.height, ECS.context.fillStlye);
 }
 
 //to center drawing
