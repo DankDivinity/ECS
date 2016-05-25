@@ -34,10 +34,16 @@ ECS.systems.render = function systemRender(entities) {
                     ECS.context.fillStyle = 'black';
                 }
 
+<<<<<<< HEAD
                 var staticText = ''
                     /* curEntity.components.text.params.staticText;
                                     if(!staticText)
                                       staticText = '';*/
+=======
+                var staticText = curEntity.components.text.params.staticText;
+                if(!staticText)
+                    staticText = '';
+>>>>>>> origin/master
                 ECS.context.fillText(staticText + curEntity.components.text.value,
                     curEntity.components.position.x,
                     curEntity.components.position.y)
@@ -52,7 +58,12 @@ ECS.systems.render.prototype.lastScale = 0;
 
 
 function clearScreen() {
+<<<<<<< HEAD
     ECS.context.fillStyle = '#222222';
+=======
+    ECS.context.fillStyle = '#A1A1A1';
+
+>>>>>>> origin/master
     ECS.context.fillRect(0, 0, ECS.canvas.width, ECS.canvas.height);
 }
 

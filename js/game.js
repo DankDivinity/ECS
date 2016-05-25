@@ -51,9 +51,9 @@ ECS.Game = function Game(width, height) {
         clearInterval(spawner);
     };
     this.end = function endGame(){
-      this.pause();
+      self.pause();
       $('#game-over-screen').show();
-    }
+    };
 
     function init() {
         var scale = ECS.systems.render.prototype.scale;
@@ -85,7 +85,7 @@ ECS.Game = function Game(width, height) {
 
         var scoreEntity = new ECS.Entity();
         scoreEntity.addComponent(new ECS.Components.Appearance());
-        scoreEntity.addComponent(new ECS.Components.Text(self.score));
+        scoreEntity.addComponent(new ECS.Components.Text(self.score, {staticText: 'SCORE:', color: 'blue'}));
         scoreEntity.addComponent(new ECS.Components.Position({ x: 0, y: 30 }));
 
         entities[scoreEntity.id] = scoreEntity;
@@ -94,7 +94,7 @@ ECS.Game = function Game(width, height) {
 
         var healthEntity = new ECS.Entity();
         healthEntity.addComponent(new ECS.Components.Appearance());
-        healthEntity.addComponent(new ECS.Components.Text(player.components.health.amount,{staticText: 'HEALTH:'}));
+        healthEntity.addComponent(new ECS.Components.Text(player.components.health.amount, {staticText: 'HEALTH:', color: 'green'}));
         healthEntity.addComponent(new ECS.Components.Position({ x: 0, y: 80 }));
 
         entities[healthEntity.id] = healthEntity;

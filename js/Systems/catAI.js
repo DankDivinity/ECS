@@ -8,8 +8,11 @@ ECS.systems.catAI = function systemCatAI(entities) {
 
     if (curEntity.components.cat) {
       //set initial direction
-      if (curEntity.components.cat.started) {
+      if (curEntity.components.cat.followTime > 0) {
         //cat variables
+        
+        curEntity.components.cat.followTime--;
+        
         var cx = curEntity.components.position.x;
         var cy = curEntity.components.position.y;
         var sp = curEntity.components.cat.speed;
